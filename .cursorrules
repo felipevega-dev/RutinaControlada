@@ -1,0 +1,137 @@
+# Rutina Controlada - Cursor Rules
+
+## Stack Tecnológico
+- **Framework**: Next.js 15.5.4 (App Router)
+- **React**: 19.1.0
+- **TypeScript**: 5+
+- **Estilos**: TailwindCSS 4
+- **Estado Global**: Zustand
+- **Persistencia**: IndexedDB con Dexie
+- **Gráficos**: Recharts
+- **Animaciones**: Framer Motion
+- **PWA**: next-pwa
+
+## Convenciones de Código
+
+### Estructura de Carpetas
+```
+/src
+  /app              # Rutas Next.js App Router
+    /dashboard
+    /entrenamiento
+    /historial
+    /estadisticas
+    /ejercicios
+  /components       # Componentes React reutilizables
+    /ui             # Componentes UI básicos
+    /layout         # Navegación, header, tabs
+  /store            # Zustand stores
+  /lib              # Utilidades y lógica de negocio
+    /db             # Configuración IndexedDB (Dexie)
+  /types            # Tipos TypeScript
+```
+
+### Naming Conventions
+- **Componentes React**: PascalCase (`WorkoutCard.tsx`)
+- **Hooks**: camelCase con prefijo `use` (`useWorkouts.ts`)
+- **Stores**: camelCase con sufijo `Store` (`workoutStore.ts`)
+- **Tipos**: PascalCase (`Workout`, `Exercise`)
+- **Utilidades**: camelCase (`formatDuration.ts`)
+
+### TypeScript
+- Usar tipos explícitos, evitar `any`
+- Definir interfaces para todos los datos del dominio
+- Usar `type` para unions/intersections
+- Exports nombrados preferentemente sobre default exports
+
+### React & Next.js
+- Usar **Server Components** por defecto
+- Marcar con `'use client'` solo cuando sea necesario:
+  - Estados con `useState`, `useEffect`
+  - Event handlers interactivos
+  - Hooks de navegación
+  - Animaciones con Framer Motion
+- Aprovechar layouts y loading states del App Router
+
+### Tailwind CSS
+- **Mobile-first**: diseñar primero para móvil, luego usar breakpoints (`md:`, `lg:`)
+- Usar clases utilitarias de Tailwind, evitar CSS custom
+- Para clases condicionales, usar `clsx` o `cn` helper
+- Tema oscuro con `dark:` variant
+- Colores consistentes del tema (definir en `tailwind.config`)
+
+### Estado y Datos
+- **Zustand** para estado global (ejercicios, entrenamientos en curso)
+- **IndexedDB** vía Dexie para persistencia local
+- Operaciones CRUD asíncronas con try/catch
+- No usar Redux, Context API solo si es necesario
+
+### Estilo y UX
+- Diseño **mobile-first responsive**
+- Navegación por tabs en bottom bar (móvil) / sidebar (desktop)
+- Animaciones sutiles con Framer Motion (no exagerar)
+- Loading states y skeleton screens
+- Mensajes de error amigables
+- Confirmaciones para acciones destructivas
+
+### PWA
+- Manifest configurado con iconos de todos los tamaños
+- Service Worker para cache offline
+- Installable como app nativa
+- Splash screen y theme color configurados
+
+## Reglas Específicas del Proyecto
+
+### Dominio: Entrenamientos
+**Ejercicio**:
+- Nombre
+- Tipo (predefinido o personalizado)
+- Categoría (cardio, fuerza, flexibilidad)
+- Calorías aproximadas por minuto/repetición
+
+**Set**:
+- Número de set (1, 2, 3...)
+- Repeticiones o duración (segundos)
+
+**Entrenamiento**:
+- Fecha/hora inicio y fin
+- Duración total
+- Ejercicios realizados (cada uno con sus sets)
+- Calorías totales estimadas
+
+### Flujo de Usuario Principal
+1. **Dashboard** → Ver resumen y botón "Nuevo Entrenamiento"
+2. **Seleccionar ejercicios** → De lista predefinida o personalizada
+3. **Empezar entrenamiento** → Cronómetro en tiempo real
+4. **Registrar sets** → Agregar sets con repeticiones/tiempo
+5. **Finalizar** → Guardar en IndexedDB
+6. **Ver historial** → Lista de entrenamientos pasados
+7. **Ver estadísticas** → Gráficos de progreso
+
+### Performance
+- Imágenes optimizadas con Next.js `<Image>`
+- Lazy loading de componentes pesados
+- Memoización con `useMemo`/`useCallback` cuando sea necesario
+- IndexedDB para evitar queries a servidor
+
+### Accesibilidad
+- Labels en inputs
+- ARIA labels en botones de iconos
+- Contraste de colores suficiente
+- Navegación por teclado funcional
+
+## Comandos Comunes
+```bash
+npm run dev          # Desarrollo con Turbopack
+npm run build        # Build de producción
+npm start            # Servidor de producción
+npm run lint         # ESLint
+```
+
+## Prioridades
+1. **Funcionalidad core** primero (flujo completo de entrenamiento)
+2. **Mobile-first responsive** (la mayoría de usuarios serán móviles)
+3. **PWA installable** (funcionar offline)
+4. **UX fluida** (animaciones sutiles, feedback inmediato)
+5. **Persistencia robusta** (no perder datos nunca)
+

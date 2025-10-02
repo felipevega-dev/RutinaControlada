@@ -74,11 +74,18 @@ cd rutina-controlada
 # Instalar dependencias
 npm install
 
+# Configurar Firebase (IMPORTANTE!)
+# Sigue las instrucciones en FIREBASE_SETUP.md
+cp .env.example .env.local
+# Edita .env.local con tus credenciales de Firebase
+
 # Iniciar servidor de desarrollo
 npm run dev
 ```
 
 La aplicación estará disponible en `http://localhost:3000`.
+
+**⚠️ IMPORTANTE**: Debes configurar Firebase antes de usar la app. Ver [`FIREBASE_SETUP.md`](./FIREBASE_SETUP.md) para instrucciones detalladas.
 
 ### Scripts Disponibles
 
@@ -153,9 +160,11 @@ El tema se cambia automáticamente desde el botón en el header. La preferencia 
 
 ## 💾 Persistencia de Datos
 
-- **IndexedDB**: Todos los entrenamientos y ejercicios se guardan localmente
+- **Firebase Firestore**: Base de datos en la nube (tus datos nunca se pierden)
+- **Persistencia Offline**: Cache local con IndexedDB
+- **Auth Anónima**: Cada usuario tiene sus propios datos privados
+- **Sync Automático**: Se sincroniza cuando hay internet
 - **Zustand + localStorage**: Estado global y tema
-- **Offline**: Funciona sin conexión una vez instalada
 
 ## 🎨 Diseño Mobile-First
 
@@ -176,11 +185,13 @@ Las calorías se calculan según:
 
 Los valores están basados en estimaciones generales.
 
-## 🔒 Privacidad
+## 🔒 Privacidad y Seguridad
 
-- **100% local**: Todos los datos se almacenan en tu dispositivo
-- **Sin servidor**: No se envía información a servidores externos
+- **Datos en Firebase**: Almacenados de forma segura en Google Cloud
+- **Auth Anónima**: No requiere email ni datos personales
+- **Reglas de Seguridad**: Solo tú puedes ver tus datos
 - **Sin analytics**: No hay tracking de usuarios
+- **Código abierto**: Puedes revisar todo el código
 
 ## 🐛 Problemas Conocidos
 

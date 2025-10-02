@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import type { Exercise } from "@/types";
-import { db, seedInitialExercises } from "@/lib/db";
+import {
+  getExercises,
+  addExercise as addExerciseDb,
+  updateExercise as updateExerciseDb,
+  deleteExercise as deleteExerciseDb,
+  seedInitialExercises,
+} from "@/lib/db";
 
 interface ExerciseState {
   exercises: Exercise[];
@@ -21,7 +27,7 @@ export const useExerciseStore = create<ExerciseState>((set) => ({
     set({ isLoading: true });
     try {
       await seedInitialExercises();
-      const exercises = await db.exercises.toArray();
+      const exercises = await getExercises();
       set({ exercises, isLoading: false });
     } catch (error) {
       console.error("Error loading exercises:", error);
@@ -30,20 +36,20 @@ export const useExerciseStore = create<ExerciseState>((set) => ({
   },
 
   addExercise: async (exerciseData) => {
+    const id = await addExerciseDb(exerciseData);
     const newExercise: Exercise = {
       ...exerciseData,
-      id: `ex-custom-${Date.now()}`,
+      id,
       createdAt: new Date(),
     };
 
-    await db.exercises.add(newExercise);
     set((state) => ({
       exercises: [...state.exercises, newExercise],
     }));
   },
 
   updateExercise: async (id, updates) => {
-    await db.exercises.update(id, updates);
+    await updateExerciseDb(id, updates);
     set((state) => ({
       exercises: state.exercises.map((ex) =>
         ex.id === id ? { ...ex, ...updates } : ex
@@ -52,7 +58,7 @@ export const useExerciseStore = create<ExerciseState>((set) => ({
   },
 
   deleteExercise: async (id) => {
-    await db.exercises.delete(id);
+    await deleteExerciseDb(id);
     set((state) => ({
       exercises: state.exercises.filter((ex) => ex.id !== id),
     }));

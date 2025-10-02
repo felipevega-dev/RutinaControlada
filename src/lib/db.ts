@@ -1,95 +1,239 @@
-import Dexie, { type EntityTable } from "dexie";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  Timestamp,
+} from "firebase/firestore";
+import { db, getCurrentUserId } from "./firebase";
 import type { Exercise, Workout } from "@/types";
 
-// Definir la base de datos
-class RutinaDB extends Dexie {
-  exercises!: EntityTable<Exercise, "id">;
-  workouts!: EntityTable<Workout, "id">;
-
-  constructor() {
-    super("RutinaControlada");
-
-    this.version(1).stores({
-      exercises: "id, name, category, isCustom, createdAt",
-      workouts: "id, startTime, endTime, duration",
-    });
+// Helper: Convertir Timestamp de Firebase a Date
+const timestampToDate = (timestamp: any): Date => {
+  if (timestamp?.toDate) {
+    return timestamp.toDate();
   }
-}
+  return timestamp instanceof Date ? timestamp : new Date(timestamp);
+};
 
-export const db = new RutinaDB();
+// Helper: Convertir Date a Timestamp
+const dateToTimestamp = (date: Date) => Timestamp.fromDate(date);
 
-// Seed inicial de ejercicios predefinidos
-export const seedInitialExercises = async () => {
-  const count = await db.exercises.count();
+// ========================
+// EJERCICIOS
+// ========================
+
+export const getExercises = async (): Promise<Exercise[]> => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) throw new Error("No autenticado");
+
+  const exercisesRef = collection(db, "users", userId, "exercises");
+  const snapshot = await getDocs(exercisesRef);
+
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      createdAt: timestampToDate(data.createdAt),
+    } as Exercise;
+  });
+};
+
+export const addExercise = async (
+  exercise: Omit<Exercise, "id" | "createdAt">
+): Promise<string> => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) throw new Error("No autenticado");
+
+  const exercisesRef = collection(db, "users", userId, "exercises");
+  const docRef = await addDoc(exercisesRef, {
+    ...exercise,
+    createdAt: dateToTimestamp(new Date()),
+  });
+
+  return docRef.id;
+};
+
+export const updateExercise = async (
+  id: string,
+  updates: Partial<Exercise>
+): Promise<void> => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) throw new Error("No autenticado");
+
+  const exerciseRef = doc(db, "users", userId, "exercises", id);
+  await updateDoc(exerciseRef, updates);
+};
+
+export const deleteExercise = async (id: string): Promise<void> => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) throw new Error("No autenticado");
+
+  const exerciseRef = doc(db, "users", userId, "exercises", id);
+  await deleteDoc(exerciseRef);
+};
+
+// ========================
+// ENTRENAMIENTOS
+// ========================
+
+export const getWorkouts = async (): Promise<Workout[]> => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) throw new Error("No autenticado");
+
+  const workoutsRef = collection(db, "users", userId, "workouts");
+  const q = query(workoutsRef, orderBy("startTime", "desc"));
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      ...data,
+      startTime: timestampToDate(data.startTime),
+      endTime: data.endTime ? timestampToDate(data.endTime) : undefined,
+      exercises: data.exercises.map((ex: any) => ({
+        ...ex,
+        sets: ex.sets.map((set: any) => ({
+          ...set,
+          timestamp: timestampToDate(set.timestamp),
+        })),
+      })),
+    } as Workout;
+  });
+};
+
+export const getWorkout = async (id: string): Promise<Workout | null> => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) throw new Error("No autenticado");
+
+  const workoutRef = doc(db, "users", userId, "workouts", id);
+  const snapshot = await getDoc(workoutRef);
+
+  if (!snapshot.exists()) return null;
+
+  const data = snapshot.data();
+  return {
+    id: snapshot.id,
+    ...data,
+    startTime: timestampToDate(data.startTime),
+    endTime: data.endTime ? timestampToDate(data.endTime) : undefined,
+    exercises: data.exercises.map((ex: any) => ({
+      ...ex,
+      sets: ex.sets.map((set: any) => ({
+        ...set,
+        timestamp: timestampToDate(set.timestamp),
+      })),
+    })),
+  } as Workout;
+};
+
+export const addWorkout = async (
+  workout: Omit<Workout, "id">
+): Promise<string> => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) throw new Error("No autenticado");
+
+  const workoutsRef = collection(db, "users", userId, "workouts");
   
-  if (count === 0) {
-    const initialExercises: Exercise[] = [
+  // Convertir dates a timestamps
+  const workoutData = {
+    ...workout,
+    startTime: dateToTimestamp(workout.startTime),
+    endTime: workout.endTime ? dateToTimestamp(workout.endTime) : null,
+    exercises: workout.exercises.map((ex) => ({
+      ...ex,
+      sets: ex.sets.map((set) => ({
+        ...set,
+        timestamp: dateToTimestamp(set.timestamp),
+      })),
+    })),
+  };
+
+  const docRef = await addDoc(workoutsRef, workoutData);
+  return docRef.id;
+};
+
+export const deleteWorkout = async (id: string): Promise<void> => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) throw new Error("No autenticado");
+
+  const workoutRef = doc(db, "users", userId, "workouts", id);
+  await deleteDoc(workoutRef);
+};
+
+// ========================
+// SEED INICIAL
+// ========================
+
+export const seedInitialExercises = async () => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) return;
+
+  const exercises = await getExercises();
+  
+  if (exercises.length === 0) {
+    const initialExercises = [
       {
-        id: "ex-1",
         name: "Abdominales",
-        category: "fuerza",
+        category: "fuerza" as const,
         isCustom: false,
         caloriesPerRep: 0.15,
         description: "Abdominales tradicionales",
-        createdAt: new Date(),
       },
       {
-        id: "ex-2",
         name: "Flexiones",
-        category: "fuerza",
+        category: "fuerza" as const,
         isCustom: false,
         caloriesPerRep: 0.32,
         description: "Flexiones de pecho",
-        createdAt: new Date(),
       },
       {
-        id: "ex-3",
         name: "Sentadillas",
-        category: "fuerza",
+        category: "fuerza" as const,
         isCustom: false,
         caloriesPerRep: 0.28,
         description: "Sentadillas sin peso",
-        createdAt: new Date(),
       },
       {
-        id: "ex-4",
         name: "Plancha",
-        category: "fuerza",
+        category: "fuerza" as const,
         isCustom: false,
         caloriesPerMinute: 3.5,
         description: "Plancha isométrica",
-        createdAt: new Date(),
       },
       {
-        id: "ex-5",
         name: "Burpees",
-        category: "cardio",
+        category: "cardio" as const,
         isCustom: false,
         caloriesPerRep: 0.5,
         description: "Burpees completos",
-        createdAt: new Date(),
       },
       {
-        id: "ex-6",
         name: "Saltar la cuerda",
-        category: "cardio",
+        category: "cardio" as const,
         isCustom: false,
         caloriesPerMinute: 12,
         description: "Saltar la cuerda",
-        createdAt: new Date(),
       },
       {
-        id: "ex-7",
         name: "Estiramientos",
-        category: "flexibilidad",
+        category: "flexibilidad" as const,
         isCustom: false,
         caloriesPerMinute: 2,
         description: "Rutina de estiramientos",
-        createdAt: new Date(),
       },
     ];
 
-    await db.exercises.bulkAdd(initialExercises);
+    for (const exercise of initialExercises) {
+      await addExercise(exercise);
+    }
   }
 };
-

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card } from "@/components/ui/Card";
-import { db } from "@/lib/db";
+import { getWorkouts } from "@/lib/db";
 import { formatDuration } from "@/lib/utils";
 import {
   LineChart,
@@ -31,7 +31,7 @@ export default function EstadisticasPage() {
 
   const loadWorkouts = async () => {
     try {
-      const allWorkouts = await db.workouts.toArray();
+      const allWorkouts = await getWorkouts();
       setWorkouts(allWorkouts);
       setLoading(false);
     } catch (error) {

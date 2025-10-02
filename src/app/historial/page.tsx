@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card } from "@/components/ui/Card";
-import { db } from "@/lib/db";
+import { getWorkouts } from "@/lib/db";
 import { formatDuration } from "@/lib/utils";
 import { Calendar, Clock, Flame, ChevronRight } from "lucide-react";
 import type { Workout } from "@/types";
@@ -20,11 +20,8 @@ export default function HistorialPage() {
 
   const loadWorkouts = async () => {
     try {
-      const allWorkouts = await db.workouts.toArray();
-      const sorted = allWorkouts.sort(
-        (a, b) => b.startTime.getTime() - a.startTime.getTime()
-      );
-      setWorkouts(sorted);
+      const allWorkouts = await getWorkouts();
+      setWorkouts(allWorkouts);
       setLoading(false);
     } catch (error) {
       console.error("Error loading workouts:", error);

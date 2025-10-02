@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { db } from "@/lib/db";
+import { getWorkout, deleteWorkout } from "@/lib/db";
 import { formatDuration } from "@/lib/utils";
 import { Calendar, Clock, Flame, ArrowLeft, Trash2 } from "lucide-react";
 import type { Workout } from "@/types";
@@ -26,8 +26,8 @@ export default function WorkoutDetailPage({
 
   const loadWorkout = async () => {
     try {
-      const w = await db.workouts.get(params.id);
-      setWorkout(w || null);
+      const w = await getWorkout(params.id);
+      setWorkout(w);
       setLoading(false);
     } catch (error) {
       console.error("Error loading workout:", error);
@@ -38,7 +38,7 @@ export default function WorkoutDetailPage({
   const handleDelete = async () => {
     if (!workout) return;
     if (confirm("¿Eliminar este entrenamiento?")) {
-      await db.workouts.delete(workout.id);
+      await deleteWorkout(workout.id);
       router.push("/historial");
     }
   };

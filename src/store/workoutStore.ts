@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { Exercise, Set, WorkoutExercise, Workout } from "@/types";
-import { db } from "@/lib/db";
+import { addWorkout } from "@/lib/db";
 import { calculateWorkoutCalories } from "@/lib/calories";
 
 interface WorkoutState {
@@ -46,8 +46,7 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
     if (!state.isWorkoutActive || !state.startTime) return;
 
     const endTime = new Date();
-    const workout: Workout = {
-      id: `workout-${Date.now()}`,
+    const workout = {
       startTime: state.startTime,
       endTime,
       duration: state.elapsedSeconds,
@@ -55,7 +54,7 @@ export const useWorkoutStore = create<WorkoutState>((set, get) => ({
       totalCalories: calculateWorkoutCalories(state.currentExercises),
     };
 
-    await db.workouts.add(workout);
+    await addWorkout(workout);
 
     set({
       isWorkoutActive: false,

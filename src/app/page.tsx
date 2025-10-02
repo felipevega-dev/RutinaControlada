@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { db } from "@/lib/db";
+import { getWorkouts } from "@/lib/db";
 import { formatDuration } from "@/lib/utils";
 import { Dumbbell, TrendingUp, Flame, Trophy } from "lucide-react";
 import type { Workout } from "@/types";
@@ -27,10 +27,8 @@ export default function DashboardPage() {
 
   const loadDashboardData = async () => {
     try {
-      const allWorkouts = await db.workouts.toArray();
-      const sortedWorkouts = allWorkouts.sort(
-        (a, b) => b.startTime.getTime() - a.startTime.getTime()
-      );
+      const allWorkouts = await getWorkouts();
+      const sortedWorkouts = allWorkouts;
 
       // Calcular stats
       const now = new Date();

@@ -179,7 +179,10 @@ export const seedInitialExercises = async () => {
 
   const exercises = await getExercises();
   
-  if (exercises.length === 0) {
+  // Solo sembrar si no hay ejercicios predefinidos
+  const hasPredefined = exercises.some(ex => !ex.isCustom);
+  
+  if (!hasPredefined) {
     const initialExercises = [
       {
         name: "Abdominales",
@@ -232,8 +235,41 @@ export const seedInitialExercises = async () => {
       },
     ];
 
+    // Verificar que no existan antes de agregarlos
+    const existingNames = new Set(exercises.map(ex => ex.name.toLowerCase()));
+    
     for (const exercise of initialExercises) {
-      await addExercise(exercise);
+      if (!existingNames.has(exercise.name.toLowerCase())) {
+        await addExercise(exercise);
+      }
     }
   }
+};
+
+// Función para limpiar duplicados (llamar manualmente si es necesario)
+export const removeDuplicateExercises = async () => {
+  const userId = getCurrentUserId();
+  if (!userId || !db) return;
+
+  const exercises = await getExercises();
+  const seen = new Map<string, Exercise>();
+  const toDelete: string[] = [];
+
+  // Mantener el primero de cada nombre, marcar los demás para borrar
+  exercises.forEach(exercise => {
+    const key = exercise.name.toLowerCase();
+    if (seen.has(key)) {
+      // Si ya existe, marcar este para borrar
+      toDelete.push(exercise.id);
+    } else {
+      seen.set(key, exercise);
+    }
+  });
+
+  // Borrar duplicados
+  for (const id of toDelete) {
+    await deleteExercise(id);
+  }
+
+  return toDelete.length;
 };

@@ -1,28 +1,31 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { initAuth } from "@/lib/firebase";
+import { onAuthChange } from "@/lib/firebase";
+import { useUserStore } from "@/store/userStore";
+import type { User } from "@/types";
 
 export function useFirebaseAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { setUser } = useUserStore();
 
   useEffect(() => {
-    const authenticate = async () => {
-      try {
-        await initAuth();
-        setIsAuthenticated(true);
+    try {
+      const unsubscribe = onAuthChange((user: User | null) => {
+        setUser(user);
+        setIsAuthenticated(!!user);
         setIsLoading(false);
-      } catch (err) {
-        console.error("Error authenticating:", err);
-        setError("Error al inicializar Firebase");
-        setIsLoading(false);
-      }
-    };
+      });
 
-    authenticate();
-  }, []);
+      return () => unsubscribe();
+    } catch (err) {
+      console.error("Error initializing auth:", err);
+      setError("Error al inicializar autenticación");
+      setIsLoading(false);
+    }
+  }, [setUser]);
 
   return { isAuthenticated, isLoading, error };
 }

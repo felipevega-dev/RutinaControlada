@@ -33,7 +33,7 @@ export default function HistorialPage() {
     return (
       <MainLayout title="Historial">
         <div className="flex items-center justify-center h-full">
-          <div className="text-gray-500">Cargando...</div>
+          <div className="text-gray-500 dark:text-gray-400">Cargando...</div>
         </div>
       </MainLayout>
     );
@@ -44,7 +44,7 @@ export default function HistorialPage() {
       <div className="p-4 space-y-4 max-w-screen-xl mx-auto">
         {workouts.length === 0 ? (
           <Card>
-            <p className="text-center text-gray-500 py-8">
+            <p className="text-center text-gray-500 dark:text-gray-400 py-8">
               No hay entrenamientos registrados aún.
             </p>
           </Card>

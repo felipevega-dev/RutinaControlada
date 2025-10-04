@@ -47,7 +47,7 @@ export default function WorkoutDetailPage({
     return (
       <MainLayout title="Detalle">
         <div className="flex items-center justify-center h-full">
-          <div className="text-gray-500">Cargando...</div>
+          <div className="text-gray-500 dark:text-gray-400">Cargando...</div>
         </div>
       </MainLayout>
     );
@@ -58,7 +58,7 @@ export default function WorkoutDetailPage({
       <MainLayout title="Detalle">
         <div className="p-4">
           <Card>
-            <p className="text-center text-gray-500 py-8">
+            <p className="text-center text-gray-500 dark:text-gray-400 py-8">
               Entrenamiento no encontrado
             </p>
           </Card>

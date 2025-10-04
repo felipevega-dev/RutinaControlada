@@ -18,7 +18,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-inset-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 shadow-lg safe-area-inset-bottom">
       <div className="flex justify-around items-center h-16 max-w-screen-xl mx-auto px-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -32,20 +32,20 @@ export function BottomNav() {
             >
               <motion.div
                 className={cn(
-                  "flex flex-col items-center transition-colors",
+                  "flex flex-col items-center transition-all",
                   isActive
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-gray-600 dark:text-gray-400"
+                    ? "text-primary-600 dark:text-primary-400"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                 )}
                 whileTap={{ scale: 0.9 }}
               >
-                <Icon className="w-6 h-6 mb-1" />
+                <Icon className="w-6 h-6 mb-1" strokeWidth={isActive ? 2.5 : 2} />
                 <span className="text-xs font-medium">{item.label}</span>
               </motion.div>
               {isActive && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute top-0 w-12 h-1 bg-blue-600 dark:bg-blue-400 rounded-b-full"
+                  className="absolute top-0 w-12 h-1 bg-primary-600 dark:bg-primary-400 rounded-b-full"
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}

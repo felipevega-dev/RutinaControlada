@@ -1,8 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Light mode */
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --surface: #ffffff;
+  --primary: #0891b2;
+  --primary-hover: #0e7490;
+  --secondary: #f97316;
+  --accent: #a855f7;
+  --success: #22c55e;
+  --error: #ef4444;
+  --border: #e2e8f0;
+  --muted: #64748b;
 }
 
 @theme inline {
@@ -13,14 +23,33 @@
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  /* Dark mode - Colores mejorados para mejor contraste */
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --surface: #1e293b;
+  --primary: #22d3ee;
+  --primary-hover: #06b6d4;
+  --secondary: #fb923c;
+  --accent: #c084fc;
+  --success: #4ade80;
+  --error: #f87171;
+  --border: #334155;
+  --muted: #cbd5e1;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not(.light) {
+    --background: #0f172a;
+    --foreground: #f1f5f9;
+    --surface: #1e293b;
+    --primary: #22d3ee;
+    --primary-hover: #06b6d4;
+    --secondary: #fb923c;
+    --accent: #c084fc;
+    --success: #4ade80;
+    --error: #f87171;
+    --border: #334155;
+    --muted: #cbd5e1;
   }
 }
 

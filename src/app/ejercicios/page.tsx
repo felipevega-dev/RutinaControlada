@@ -5,14 +5,16 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useExerciseStore } from "@/store/exerciseStore";
-import { Plus, Edit, Trash2, X } from "lucide-react";
+import { Plus, Edit, Trash2, X, RefreshCw } from "lucide-react";
 import type { Exercise, ExerciseCategory } from "@/types";
+import { removeDuplicateExercises } from "@/lib/db";
 
 export default function EjerciciosPage() {
   const { exercises, loadExercises, addExercise, updateExercise, deleteExercise } =
     useExerciseStore();
   const [showForm, setShowForm] = useState(false);
   const [editingExercise, setEditingExercise] = useState<Exercise | null>(null);
+  const [cleaning, setCleaning] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -25,6 +27,20 @@ export default function EjerciciosPage() {
   useEffect(() => {
     loadExercises();
   }, [loadExercises]);
+
+  const handleCleanDuplicates = async () => {
+    if (!confirm("¿Limpiar ejercicios duplicados?")) return;
+    setCleaning(true);
+    try {
+      const removed = await removeDuplicateExercises();
+      await loadExercises();
+      alert(`Se eliminaron ${removed} duplicados`);
+    } catch (error) {
+      console.error("Error limpiando duplicados:", error);
+      alert("Error al limpiar duplicados");
+    }
+    setCleaning(false);
+  };
 
   const handleOpenForm = (exercise?: Exercise) => {
     if (exercise) {
@@ -93,10 +109,21 @@ export default function EjerciciosPage() {
       <div className="p-4 space-y-6 max-w-screen-xl mx-auto">
         {!showForm ? (
           <>
-            <Button size="lg" className="w-full" onClick={() => handleOpenForm()}>
-              <Plus className="w-5 h-5 mr-2" />
-              Agregar Ejercicio Personalizado
-            </Button>
+            <div className="flex gap-3">
+              <Button size="lg" className="flex-1" onClick={() => handleOpenForm()}>
+                <Plus className="w-5 h-5 mr-2" />
+                Agregar Ejercicio
+              </Button>
+              <Button 
+                size="lg" 
+                variant="secondary" 
+                onClick={handleCleanDuplicates}
+                disabled={cleaning}
+                className="shrink-0"
+              >
+                <RefreshCw className={`w-5 h-5 ${cleaning ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
 
             {/* Ejercicios personalizados */}
             {customExercises.length > 0 && (
@@ -116,7 +143,7 @@ export default function EjerciciosPage() {
                             {exercise.category}
                           </p>
                           {exercise.description && (
-                            <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                               {exercise.description}
                             </p>
                           )}
@@ -158,7 +185,7 @@ export default function EjerciciosPage() {
                         {exercise.category}
                       </p>
                       {exercise.description && (
-                        <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                           {exercise.description}
                         </p>
                       )}

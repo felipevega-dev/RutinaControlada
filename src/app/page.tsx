@@ -55,7 +55,7 @@ export default function DashboardPage() {
     return (
       <MainLayout title="Rutina Controlada">
         <div className="flex items-center justify-center h-full">
-          <div className="text-gray-500">Cargando...</div>
+          <div className="text-gray-500 dark:text-gray-400">Cargando...</div>
         </div>
       </MainLayout>
     );
@@ -67,51 +67,51 @@ export default function DashboardPage() {
         {/* Botón principal */}
         <Button
           size="lg"
-          className="w-full"
+          className="w-full flex items-center justify-center"
           onClick={() => router.push("/entrenamiento")}
         >
-          <Dumbbell className="w-5 h-5 mr-2" />
+          <Dumbbell className="w-5 h-5 mr-2" strokeWidth={2.5} />
           Nuevo Entrenamiento
         </Button>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-2 gap-4">
           <Card className="flex flex-col items-center justify-center py-6">
-            <Trophy className="w-8 h-8 text-blue-600 dark:text-blue-400 mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <Trophy className="w-8 h-8 text-primary-600 dark:text-primary-300 mb-2" strokeWidth={2} />
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {stats.totalWorkouts}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-gray-300">
               Entrenamientos
             </div>
           </Card>
 
           <Card className="flex flex-col items-center justify-center py-6">
-            <TrendingUp className="w-8 h-8 text-green-600 dark:text-green-400 mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <TrendingUp className="w-8 h-8 text-success-600 dark:text-success-300 mb-2" strokeWidth={2} />
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {stats.thisWeekWorkouts}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-gray-300">
               Esta semana
             </div>
           </Card>
 
           <Card className="flex flex-col items-center justify-center py-6">
-            <Flame className="w-8 h-8 text-orange-600 dark:text-orange-400 mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <Flame className="w-8 h-8 text-secondary-600 dark:text-secondary-300 mb-2" strokeWidth={2} />
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {Math.round(stats.totalCalories)}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-gray-300">
               Calorías
             </div>
           </Card>
 
           <Card className="flex flex-col items-center justify-center py-6">
-            <Dumbbell className="w-8 h-8 text-purple-600 dark:text-purple-400 mb-2" />
-            <div className="text-2xl font-bold text-gray-900 dark:text-white">
+            <Dumbbell className="w-8 h-8 text-accent-600 dark:text-accent-300 mb-2" strokeWidth={2} />
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {formatDuration(stats.totalDuration)}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400">
+            <div className="text-sm text-gray-600 dark:text-gray-300">
               Tiempo total
             </div>
           </Card>
@@ -119,12 +119,12 @@ export default function DashboardPage() {
 
         {/* Entrenamientos recientes */}
         <div>
-          <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">
+          <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
             Entrenamientos Recientes
           </h2>
           {recentWorkouts.length === 0 ? (
             <Card>
-              <p className="text-center text-gray-500 py-8">
+              <p className="text-center text-gray-500 dark:text-gray-400 py-8">
                 No hay entrenamientos aún. ¡Empieza tu primer entrenamiento!
               </p>
             </Card>
@@ -137,7 +137,7 @@ export default function DashboardPage() {
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <div className="font-medium text-gray-900 dark:text-white">
+                      <div className="font-medium text-gray-900 dark:text-gray-100">
                         {workout.exercises.length} ejercicio
                         {workout.exercises.length !== 1 ? "s" : ""}
                       </div>
@@ -150,7 +150,7 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                      <div className="text-lg font-semibold text-primary-600 dark:text-primary-400">
                         {formatDuration(workout.duration)}
                       </div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">

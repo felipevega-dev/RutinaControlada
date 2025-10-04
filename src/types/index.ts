@@ -1,5 +1,14 @@
 // Tipos de dominio
 
+export interface User {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL?: string;
+  createdAt: Date;
+  lastLoginAt: Date;
+}
+
 export type ExerciseCategory = "fuerza" | "cardio" | "flexibilidad";
 
 export interface Exercise {

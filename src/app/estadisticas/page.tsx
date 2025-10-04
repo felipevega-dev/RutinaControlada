@@ -20,10 +20,12 @@ import { TrendingUp, Dumbbell, Flame, Clock } from "lucide-react";
 import type { Workout } from "@/types";
 import { format, subDays, startOfDay } from "date-fns";
 import { es } from "date-fns/locale";
+import { useThemeStore } from "@/store/themeStore";
 
 export default function EstadisticasPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
+  const { theme } = useThemeStore();
 
   useEffect(() => {
     loadWorkouts();
@@ -44,7 +46,7 @@ export default function EstadisticasPage() {
     return (
       <MainLayout title="Estadísticas">
         <div className="flex items-center justify-center h-full">
-          <div className="text-gray-500">Cargando...</div>
+          <div className="text-gray-500 dark:text-gray-400">Cargando...</div>
         </div>
       </MainLayout>
     );
@@ -104,7 +106,7 @@ export default function EstadisticasPage() {
       <div className="p-4 space-y-6 max-w-screen-xl mx-auto">
         {totalWorkouts === 0 ? (
           <Card>
-            <p className="text-center text-gray-500 py-8">
+            <p className="text-center text-gray-500 dark:text-gray-400 py-8">
               No hay datos suficientes para mostrar estadísticas.
             </p>
           </Card>
@@ -184,21 +186,22 @@ export default function EstadisticasPage() {
               </h3>
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={workoutsByDay}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                  <CartesianGrid strokeDasharray="3 3" opacity={theme === "dark" ? 0.1 : 0.3} stroke={theme === "dark" ? "#475569" : "#e2e8f0"} />
                   <XAxis
                     dataKey="day"
-                    tick={{ fill: "#6b7280", fontSize: 12 }}
+                    tick={{ fill: theme === "dark" ? "#9ca3af" : "#6b7280", fontSize: 12 }}
+                    stroke={theme === "dark" ? "#475569" : "#cbd5e1"}
                   />
-                  <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <YAxis tick={{ fill: theme === "dark" ? "#9ca3af" : "#6b7280", fontSize: 12 }} stroke={theme === "dark" ? "#475569" : "#cbd5e1"} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1f2937",
-                      border: "none",
+                      backgroundColor: theme === "dark" ? "#1e293b" : "#ffffff",
+                      border: `1px solid ${theme === "dark" ? "#475569" : "#e2e8f0"}`,
                       borderRadius: "8px",
-                      color: "#fff",
+                      color: theme === "dark" ? "#f1f5f9" : "#0f172a",
                     }}
                   />
-                  <Bar dataKey="entrenamientos" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="entrenamientos" fill={theme === "dark" ? "#3b82f6" : "#2563eb"} radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </Card>
@@ -210,26 +213,27 @@ export default function EstadisticasPage() {
               </h3>
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={workoutsByDay}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                  <CartesianGrid strokeDasharray="3 3" opacity={theme === "dark" ? 0.1 : 0.3} stroke={theme === "dark" ? "#475569" : "#e2e8f0"} />
                   <XAxis
                     dataKey="day"
-                    tick={{ fill: "#6b7280", fontSize: 12 }}
+                    tick={{ fill: theme === "dark" ? "#9ca3af" : "#6b7280", fontSize: 12 }}
+                    stroke={theme === "dark" ? "#475569" : "#cbd5e1"}
                   />
-                  <YAxis tick={{ fill: "#6b7280", fontSize: 12 }} />
+                  <YAxis tick={{ fill: theme === "dark" ? "#9ca3af" : "#6b7280", fontSize: 12 }} stroke={theme === "dark" ? "#475569" : "#cbd5e1"} />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#1f2937",
-                      border: "none",
+                      backgroundColor: theme === "dark" ? "#1e293b" : "#ffffff",
+                      border: `1px solid ${theme === "dark" ? "#475569" : "#e2e8f0"}`,
                       borderRadius: "8px",
-                      color: "#fff",
+                      color: theme === "dark" ? "#f1f5f9" : "#0f172a",
                     }}
                   />
                   <Line
                     type="monotone"
                     dataKey="calorías"
-                    stroke="#f97316"
+                    stroke={theme === "dark" ? "#fb923c" : "#f97316"}
                     strokeWidth={3}
-                    dot={{ fill: "#f97316", r: 4 }}
+                    dot={{ fill: theme === "dark" ? "#fb923c" : "#f97316", r: 4 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
